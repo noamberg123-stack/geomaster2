@@ -3,9 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GeoGuessr ULTRA PRO</title>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<title>Geo Ultra Satellite</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
@@ -17,32 +20,33 @@
 }
 
 body{
-    font-family:Arial;
     background:#050505;
     color:white;
+    font-family:Arial;
     overflow:hidden;
 }
 
 #topbar{
     height:70px;
     background:#111;
+    border-bottom:2px solid #222;
+
     display:flex;
     justify-content:space-between;
     align-items:center;
+
     padding:0 20px;
-    border-bottom:2px solid #222;
 }
 
 .logo{
-    font-size:28px;
     color:#00ffcc;
+    font-size:28px;
     font-weight:bold;
 }
 
 .stats{
     display:flex;
     gap:20px;
-    align-items:center;
 }
 
 .stat{
@@ -59,15 +63,8 @@ body{
     height:calc(100vh - 70px);
 }
 
-#streetview{
+#satellite{
     flex:1;
-    position:relative;
-}
-
-#streetFrame{
-    width:100%;
-    height:100%;
-    border:none;
 }
 
 #map{
@@ -79,125 +76,113 @@ body{
 #overlay{
     position:absolute;
     inset:0;
-    background:rgba(0,0,0,0.92);
-    z-index:99999;
+    background:rgba(0,0,0,0.95);
+
     display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
+
+    z-index:9999;
 }
 
 .title{
     font-size:72px;
     color:#00ffcc;
     margin-bottom:20px;
-    text-shadow:0 0 20px #00ffcc;
 }
 
 .subtitle{
-    color:#888;
-    font-size:20px;
+    color:#777;
     margin-bottom:40px;
 }
 
 .play-btn{
     background:#00ffcc;
     color:black;
+
     border:none;
+
     padding:18px 40px;
-    font-size:24px;
+
     border-radius:15px;
+
     cursor:pointer;
+
+    font-size:22px;
     font-weight:bold;
 }
 
-.play-btn:hover{
-    transform:scale(1.05);
-}
-
-#roundResult{
+#result{
     position:absolute;
+
     top:50%;
     left:50%;
-    transform:translate(-50%,-50%);
-    background:#111;
-    border:2px solid #00ffcc;
-    border-radius:20px;
-    padding:30px;
-    z-index:5000;
-    display:none;
-    text-align:center;
-    width:350px;
-}
 
-#roundResult h2{
-    margin-bottom:15px;
-    color:#00ffcc;
+    transform:translate(-50%,-50%);
+
+    background:#111;
+
+    border:2px solid #00ffcc;
+
+    padding:30px;
+
+    border-radius:20px;
+
+    display:none;
+
+    z-index:99999;
+
+    text-align:center;
 }
 
 .next-btn{
     margin-top:20px;
-    background:#00ffcc;
-    border:none;
-    color:black;
-    padding:12px 25px;
-    border-radius:10px;
-    cursor:pointer;
-    font-weight:bold;
-}
 
-#comboEffect{
-    position:absolute;
-    top:90px;
-    left:50%;
-    transform:translateX(-50%);
-    font-size:40px;
-    color:gold;
-    font-weight:bold;
-    opacity:0;
-    transition:0.3s;
-    z-index:9999;
+    background:#00ffcc;
+
+    color:black;
+
+    border:none;
+
+    padding:12px 25px;
+
+    border-radius:10px;
+
+    cursor:pointer;
 }
 
 #timerBar{
     position:absolute;
+
     top:0;
     left:0;
-    height:6px;
+
     width:100%;
+    height:6px;
+
     background:#00ffcc;
-    z-index:1000;
+
+    z-index:999;
 }
 
-#gameOver{
+#comboEffect{
     position:absolute;
-    inset:0;
-    background:black;
-    z-index:999999;
-    display:none;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-}
 
-#gameOver h1{
-    font-size:80px;
-    color:red;
-    margin-bottom:20px;
-}
+    top:90px;
+    left:50%;
 
-.power-buttons{
-    display:flex;
-    gap:10px;
-}
+    transform:translateX(-50%);
 
-.power-btn{
-    background:#222;
-    border:1px solid #00ffcc;
-    color:#00ffcc;
-    padding:8px 14px;
-    border-radius:8px;
-    cursor:pointer;
+    color:gold;
+
+    font-size:42px;
+
+    opacity:0;
+
+    transition:0.3s;
+
+    z-index:99999;
 }
 
 @media(max-width:900px){
@@ -211,7 +196,7 @@ body{
         height:40%;
     }
 
-    #streetview{
+    #satellite{
         height:60%;
     }
 
@@ -223,11 +208,22 @@ body{
 <body>
 
 <div id="overlay">
-    <div class="title">GEO ULTRA PRO</div>
-    <div class="subtitle">Ultimate World Challenge</div>
-    <button class="play-btn" onclick="startGame()">
-        START GAME
+
+    <div class="title">
+        GEO ULTRA
+    </div>
+
+    <div class="subtitle">
+        Satellite Challenge
+    </div>
+
+    <button class="play-btn"
+    onclick="startGame()">
+
+        START
+
     </button>
+
 </div>
 
 <div id="comboEffect"></div>
@@ -235,62 +231,44 @@ body{
 <div id="topbar">
 
     <div class="logo">
-        🌍 GEO PRO
+        🌍 GEO ULTRA
     </div>
 
     <div class="stats">
 
         <div class="stat">
             Score:
-            <span class="value" id="score">0</span>
+            <span class="value"
+            id="score">0</span>
         </div>
 
         <div class="stat">
             Round:
-            <span class="value" id="round">1</span>
-        </div>
-
-        <div class="stat">
-            Level:
-            <span class="value" id="level">1</span>
+            <span class="value"
+            id="round">1</span>
         </div>
 
         <div class="stat">
             Combo:
-            <span class="value" id="combo">x1</span>
-        </div>
-
-        <div class="stat">
-            Lives:
-            <span class="value" id="lives">3</span>
+            <span class="value"
+            id="combo">x1</span>
         </div>
 
         <div class="stat">
             Time:
-            <span class="value" id="timer">30</span>
+            <span class="value"
+            id="timer">30</span>
         </div>
 
-    </div>
-
-    <div class="power-buttons">
-        <button class="power-btn" onclick="extraTime()">
-            +10 SEC
-        </button>
-
-        <button class="power-btn" onclick="radarScan()">
-            RADAR
-        </button>
     </div>
 
 </div>
 
 <div id="game">
 
-    <div id="streetview">
+    <div id="satellite">
 
         <div id="timerBar"></div>
-
-        <iframe id="streetFrame"></iframe>
 
     </div>
 
@@ -298,7 +276,7 @@ body{
 
 </div>
 
-<div id="roundResult">
+<div id="result">
 
     <h2>ROUND COMPLETE</h2>
 
@@ -306,53 +284,29 @@ body{
 
     <p id="pointsText"></p>
 
-    <button class="next-btn" onclick="nextRound()">
+    <button class="next-btn"
+    onclick="nextRound()">
+
         NEXT ROUND
+
     </button>
 
 </div>
-
-<div id="gameOver">
-
-    <h1>GAME OVER</h1>
-
-    <p style="font-size:30px;margin-bottom:20px;">
-        Final Score:
-        <span id="finalScore"></span>
-    </p>
-
-    <button class="play-btn" onclick="location.reload()">
-        PLAY AGAIN
-    </button>
-
-</div>
-
-<audio id="clickSound"
-src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
-
-<audio id="winSound"
-src="https://assets.mixkit.co/active_storage/sfx/270/270-preview.mp3"></audio>
 
 <script>
 
 const LOCATIONS = [
 
 {
-name:"Eiffel Tower",
-lat:48.8584,
-lon:2.2945
-},
-
-{
-name:"Statue of Liberty",
+name:"New York",
 lat:40.6892,
 lon:-74.0445
 },
 
 {
-name:"Pyramids of Giza",
-lat:29.9792,
-lon:31.1342
+name:"Paris",
+lat:48.8584,
+lon:2.2945
 },
 
 {
@@ -362,72 +316,95 @@ lon:139.6503
 },
 
 {
-name:"Sydney Opera House",
+name:"Sydney",
 lat:-33.8568,
 lon:151.2153
 },
 
 {
-name:"Colosseum",
-lat:41.8902,
-lon:12.4922
+name:"Dubai",
+lat:25.1972,
+lon:55.2744
 },
 
 {
-name:"Burj Khalifa",
-lat:25.1972,
-lon:55.2744
+name:"Rome",
+lat:41.8902,
+lon:12.4922
 }
 
 ];
 
 let map;
+let satellite;
 let target;
 
 let score = 0;
 let round = 1;
 let combo = 0;
-let lives = 3;
 
 let canGuess = true;
 
 let timer;
 let timeLeft = 30;
 
-const scoreEl = document.getElementById("score");
-const roundEl = document.getElementById("round");
-const comboEl = document.getElementById("combo");
-const levelEl = document.getElementById("level");
-const timerEl = document.getElementById("timer");
-const livesEl = document.getElementById("lives");
+const scoreEl =
+document.getElementById("score");
+
+const roundEl =
+document.getElementById("round");
+
+const comboEl =
+document.getElementById("combo");
+
+const timerEl =
+document.getElementById("timer");
 
 function startGame(){
 
-    document.getElementById("overlay").style.display = "none";
+    document.getElementById("overlay")
+    .style.display = "none";
 
-    map = L.map('map').setView([20,0],2);
+    satellite =
+    L.map('satellite',
+    {
+        zoomControl:false
+    })
+    .setView([20,0],2);
+
+    L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+    ).addTo(satellite);
+
+    map =
+    L.map('map')
+    .setView([20,0],2);
 
     L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
     ).addTo(map);
 
-    map.on('click', handleGuess);
+    map.on('click',handleGuess);
 
     nextRound();
 }
 
 function nextRound(){
 
-    document.getElementById("roundResult").style.display = "none";
+    document.getElementById("result")
+    .style.display = "none";
 
     canGuess = true;
 
-    target = LOCATIONS[
+    target =
+    LOCATIONS[
         Math.floor(Math.random()*LOCATIONS.length)
     ];
 
-    document.getElementById("streetFrame").src =
-    `https://maps.google.com/maps?q=&layer=c&cbll=${target.lat},${target.lon}&cbp=11,0,0,0,0&output=svembed`;
+    satellite.setView(
+        [target.lat,target.lon],
+        15
+    );
 
     resetTimer();
 }
@@ -440,11 +417,13 @@ function resetTimer(){
 
     timerEl.innerText = timeLeft;
 
-    const bar = document.getElementById("timerBar");
+    const bar =
+    document.getElementById("timerBar");
 
     bar.style.width = "100%";
 
-    timer = setInterval(()=>{
+    timer =
+    setInterval(()=>{
 
         timeLeft--;
 
@@ -457,31 +436,56 @@ function resetTimer(){
 
             clearInterval(timer);
 
-            loseLife();
+            canGuess = false;
 
             showResult(20000,0);
-
-            canGuess = false;
         }
 
     },1000);
 }
 
-function distance(lat1, lon1, lat2, lon2){
+function distance(
+lat1,
+lon1,
+lat2,
+lon2
+){
 
     const R = 6371;
 
-    const dLat = (lat2-lat1)*Math.PI/180;
-    const dLon = (lon2-lon1)*Math.PI/180;
+    const dLat =
+    (lat2-lat1)*Math.PI/180;
+
+    const dLon =
+    (lon2-lon1)*Math.PI/180;
 
     const a =
-    Math.sin(dLat/2)*Math.sin(dLat/2)+
-    Math.cos(lat1*Math.PI/180)*
-    Math.cos(lat2*Math.PI/180)*
-    Math.sin(dLon/2)*Math.sin(dLon/2);
+
+    Math.sin(dLat/2)*
+    Math.sin(dLat/2)
+
+    +
+
+    Math.cos(lat1*Math.PI/180)
+
+    *
+
+    Math.cos(lat2*Math.PI/180)
+
+    *
+
+    Math.sin(dLon/2)
+
+    *
+
+    Math.sin(dLon/2);
 
     return R * 2 *
-    Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+
+    Math.atan2(
+        Math.sqrt(a),
+        Math.sqrt(1-a)
+    );
 }
 
 function handleGuess(e){
@@ -492,8 +496,6 @@ function handleGuess(e){
 
     clearInterval(timer);
 
-    document.getElementById("clickSound").play();
-
     const d = distance(
         e.latlng.lat,
         e.latlng.lng,
@@ -502,27 +504,25 @@ function handleGuess(e){
     );
 
     const marker1 =
-    L.marker(e.latlng).addTo(map);
+    L.marker(e.latlng)
+    .addTo(map);
 
     const marker2 =
-    L.marker([target.lat,target.lon]).addTo(map);
+    L.marker(
+        [target.lat,target.lon]
+    )
+    .addTo(map);
 
-    const line = L.polyline(
+    const line =
+    L.polyline(
     [
         e.latlng,
         [target.lat,target.lon]
     ],
     {
         color:'#00ffcc'
-    }).addTo(map);
-
-    setTimeout(()=>{
-
-        map.removeLayer(marker1);
-        map.removeLayer(marker2);
-        map.removeLayer(line);
-
-    },2500);
+    })
+    .addTo(map);
 
     if(d < 500){
 
@@ -531,23 +531,28 @@ function handleGuess(e){
     }else{
 
         combo = 0;
-
-        loseLife();
     }
 
-    let multiplier = 1 + combo*0.5;
+    const multiplier =
+    1 + combo*0.5;
 
     comboEl.innerText =
-    "x" + multiplier.toFixed(1);
+    "x" +
+    multiplier.toFixed(1);
 
     if(combo >= 2){
 
         showCombo(multiplier);
     }
 
-    const points = Math.max(
+    const points =
+    Math.max(
         0,
-        Math.round((10000 - d*5) * multiplier)
+        Math.round(
+            (10000 - d*5)
+            *
+            multiplier
+        )
     );
 
     score += points;
@@ -558,15 +563,17 @@ function handleGuess(e){
 
     roundEl.innerText = round;
 
-    levelEl.innerText =
-    Math.floor(score/20000)+1;
+    showResult(d,points);
 
-    if(points > 5000){
+    setTimeout(()=>{
 
-        document.getElementById("winSound").play();
-    }
+        map.removeLayer(marker1);
 
-    showResult(d, points);
+        map.removeLayer(marker2);
+
+        map.removeLayer(line);
+
+    },3000);
 }
 
 function showCombo(mult){
@@ -575,7 +582,8 @@ function showCombo(mult){
     document.getElementById("comboEffect");
 
     el.innerText =
-    "COMBO x" + mult.toFixed(1);
+    "COMBO x" +
+    mult.toFixed(1);
 
     el.style.opacity = 1;
 
@@ -586,53 +594,24 @@ function showCombo(mult){
     },1200);
 }
 
-function showResult(distanceKm, points){
+function showResult(distanceKm,points){
 
-    document.getElementById("roundResult")
+    document.getElementById("result")
     .style.display = "block";
 
     document.getElementById("distanceText")
     .innerText =
-    "Distance: " +
-    Math.round(distanceKm) +
+    "Distance: "
+    +
+    Math.round(distanceKm)
+    +
     " km";
 
     document.getElementById("pointsText")
     .innerText =
-    "Points: +" + points;
-}
-
-function loseLife(){
-
-    lives--;
-
-    livesEl.innerText = lives;
-
-    if(lives <= 0){
-
-        document.getElementById("finalScore")
-        .innerText = score;
-
-        document.getElementById("gameOver")
-        .style.display = "flex";
-    }
-}
-
-function extraTime(){
-
-    timeLeft += 10;
-
-    timerEl.innerText = timeLeft;
-}
-
-function radarScan(){
-
-    L.circle(
-    [target.lat,target.lon],
-    {
-        radius:500000,
-        color:'yellow'
-    }).addTo(map);
+    "Points: +"
+    +
+    points;
 }
 
 </script>
