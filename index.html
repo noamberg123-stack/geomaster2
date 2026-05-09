@@ -1,786 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
-
-<title>GEO ULTRA ONLINE</title>
-
-<link rel="stylesheet"
-href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GEO ULTRA PRO MAX</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
-body{
-background:#050505;
-font-family:Arial;
-overflow:hidden;
-color:white;
-}
-
-#overlay{
-position:absolute;
-inset:0;
-background:black;
-display:flex;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-z-index:999999;
-}
-
-.title{
-font-size:72px;
-font-weight:bold;
-color:#00ffcc;
-margin-bottom:20px;
-text-shadow:0 0 25px #00ffcc;
-}
-
-.subtitle{
-color:#888;
-margin-bottom:30px;
-font-size:20px;
-}
-
-#username{
-padding:16px;
-width:260px;
-background:#111;
-border:2px solid #00ffcc;
-border-radius:12px;
-color:white;
-font-size:20px;
-margin-bottom:20px;
-text-align:center;
-outline:none;
-}
-
-.play-btn{
-background:#00ffcc;
-color:black;
-border:none;
-padding:18px 42px;
-border-radius:12px;
-font-size:22px;
-font-weight:bold;
-cursor:pointer;
-cursor:pointer;
-transition:0.2s;
-}
-
-.play-btn:hover{
-transform:scale(1.05);
-}
-
-#topbar{
-height:70px;
-background:#111;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:0 20px;
-border-bottom:2px solid #222;
-}
-
-.logo{
-font-size:28px;
-font-weight:bold;
-color:#00ffcc;
-}
-
-.stats{
-display:flex;
-gap:20px;
-font-size:18px;
-}
-
-#game{
-display:flex;
-height:calc(100vh - 70px);
-}
-
-#satellite{
-flex:1;
-}
-
-#map{
-width:35%;
-height:100%;
-}
-
-#leaderboard{
-position:absolute;
-right:15px;
-top:90px;
-width:240px;
-background:#111;
-border:2px solid #00ffcc;
-border-radius:15px;
-padding:15px;
-z-index:99999;
-max-height:420px;
-overflow:auto;
-}
-
-.lb-item{
-display:flex;
-justify-content:space-between;
-margin-bottom:8px;
-padding-bottom:5px;
-border-bottom:1px solid #222;
-}
-
-#result{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-background:#111;
-border:2px solid #00ffcc;
-padding:30px;
-border-radius:20px;
-display:none;
-z-index:999999;
-width:350px;
-text-align:center;
-}
-
-.next-btn{
-margin-top:20px;
-background:#00ffcc;
-color:black;
-border:none;
-padding:12px 24px;
-border-radius:10px;
-font-weight:bold;
-cursor:pointer;
-}
-
-#comboEffect{
-position:absolute;
-top:100px;
-left:50%;
-transform:translateX(-50%);
-font-size:48px;
-font-weight:bold;
-color:gold;
-opacity:0;
-transition:0.3s;
-z-index:999999;
-pointer-events:none;
-}
-
-#gameOver{
-position:absolute;
-inset:0;
-background:black;
-display:none;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-z-index:999999;
-}
-
-#gameOver h1{
-font-size:80px;
-color:red;
-margin-bottom:20px;
-}
-
-@media(max-width:900px){
-
-#game{
-flex-direction:column;
-}
-
-#map{
-width:100%;
-height:40%;
-}
-
-#satellite{
-height:60%;
-}
-
-.title{
-font-size:48px;
-}
-
-}
-
+body{margin:0;font-family:Arial;background:#000;color:#0ff;overflow:hidden}
+#ui{position:absolute;top:0;left:0;right:0;height:60px;background:#111;display:flex;justify-content:space-between;align-items:center;padding:0 15px}
+#game{display:flex;height:100vh;padding-top:60px}
+#view{flex:1}
+#map{width:35%}
+.panel{position:absolute;right:10px;top:70px;background:#111;padding:10px;border:1px solid #0ff}
+button{background:#0ff;border:none;padding:8px;cursor:pointer}
 </style>
 
 </head>
 
 <body>
 
-<div id="overlay">
-
-<div class="title">
-GEO ULTRA
-</div>
-
-<div class="subtitle">
-ONLINE MULTIPLAYER
-</div>
-
-<input
-id="username"
-placeholder="USERNAME"
-/>
-
-<button
-class="play-btn"
-onclick="startGame()">
-
-START GAME
-
-</button>
-
-</div>
-
-<div id="comboEffect"></div>
-
-<div id="topbar">
-
-<div class="logo">
-🌍 GEO ULTRA
-</div>
-
-<div class="stats">
-
-<div>
-Score:
-<span id="score">0</span>
-</div>
-
-<div>
-Round:
-<span id="round">1</span>
-</div>
-
-<div>
-Combo:
-<span id="combo">x1</span>
-</div>
-
-<div>
-Lives:
-<span id="lives">3</span>
-</div>
-
-</div>
-
-</div>
-
-<div id="leaderboard">
-
-<h2 style="margin-bottom:10px;">
-🏆 GLOBAL
-</h2>
-
-<div id="leaderboardList">
-Loading...
-</div>
-
+<div id="ui">
+<div>🌍 GEO PRO MAX</div>
+<div id="stats">Score: 0 | ELO: 1000 | Room: SOLO</div>
 </div>
 
 <div id="game">
-
-<div id="satellite"></div>
-
+<div id="view"></div>
 <div id="map"></div>
-
 </div>
 
-<div id="result">
-
-<h2>ROUND COMPLETE</h2>
-
-<br>
-
-<p id="distanceText"></p>
-
-<br>
-
-<p id="pointsText"></p>
-
-<br>
-
-<p id="ratingText"></p>
-
-<button
-class="next-btn"
-onclick="nextRound()">
-
-NEXT ROUND
-
-</button>
-
-</div>
-
-<div id="gameOver">
-
-<h1>GAME OVER</h1>
-
-<p style="font-size:28px;">
-Final Score:
-<span id="finalScore"></span>
-</p>
-
-<br>
-
-<button
-class="play-btn"
-onclick="location.reload()">
-
-PLAY AGAIN
-
-</button>
-
+<div class="panel">
+<button onclick="createRoom()">Create Room</button>
+<button onclick="joinRoom()">Join Room</button>
+<button onclick="daily()">Daily Challenge</button>
 </div>
 
 <script>
 
-const SUPABASE_URL =
-"https://ptairxnfkdemqkfttjuk.supabase.co";
+const SUPABASE_URL = "https://ptairxnfkdemqkfttjuk.supabase.co";
+const SUPABASE_KEY = "YOUR_KEY_HERE";
+const db = supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-const SUPABASE_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0YWlyeG5ma2RlbXFrZnR0anVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMjI4MjgsImV4cCI6MjA5Mzg5ODgyOH0.0x-i97bxYIKXpjOi0ofdnawej6EA0DYiyRBQftye5iA";
+// ---------------- GAME STATE ----------------
+let score=0;
+let elo=1000;
+let room="SOLO";
+let target={lat:0,lng:0};
 
-const db =
-window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
+// ---------------- STREET VIEW ----------------
+let panorama;
 
-const LOCATIONS = [
-
-{name:"Paris",lat:48.8584,lon:2.2945},
-{name:"Tokyo",lat:35.6762,lon:139.6503},
-{name:"Sydney",lat:-33.8568,lon:151.2153},
-{name:"Dubai",lat:25.1972,lon:55.2744},
-{name:"Rome",lat:41.8902,lon:12.4922},
-{name:"London",lat:51.5074,lon:-0.1278},
-{name:"Rio",lat:-22.9068,lon:-43.1729},
-{name:"Jerusalem",lat:31.7683,lon:35.2137},
-{name:"Berlin",lat:52.5200,lon:13.4050},
-{name:"Singapore",lat:1.3521,lon:103.8198}
-
-];
-
-let satellite;
-let map;
-let target;
-
-let score = 0;
-let round = 1;
-let combo = 0;
-let lives = 3;
-
-let username = "PLAYER";
-
-let canGuess = true;
-
-function startGame(){
-
-username =
-document.getElementById(
-"username"
-).value || "PLAYER";
-
-document.getElementById(
-"overlay"
-).style.display = "none";
-
-satellite =
-L.map(
-'satellite',
+function loadStreet(lat,lng){
+if(window.google){
+panorama = new google.maps.StreetViewPanorama(
+document.getElementById("view"),
 {
-zoomControl:false
+position:{lat,lng},
+pov:{heading:0,pitch:0},
+zoom:1
+});
 }
-).setView([20,0],2);
+}
 
-L.tileLayer(
-'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-).addTo(satellite);
+// fallback
+function loadFallback(){
+document.getElementById("view").innerHTML =
+"<h2 style='padding:20px'>Street View unavailable</h2>";
+}
 
-map =
-L.map('map')
-.setView([20,0],2);
+// ---------------- GAME ----------------
+function newRound(){
+target = {
+lat:(Math.random()*180-90),
+lng:(Math.random()*360-180)
+};
 
-L.tileLayer(
-'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-).addTo(map);
+loadStreet(target.lat,target.lng);
+}
 
-map.on(
-'click',
-handleGuess
+// ---------------- GUESS ----------------
+function guess(lat,lng){
+
+const d = Math.sqrt(
+Math.pow(lat-target.lat,2)+
+Math.pow(lng-target.lng,2)
 );
 
-loadLeaderboard();
-
-nextRound();
-
-}
-
-function nextRound(){
-
-document.getElementById(
-"result"
-).style.display = "none";
-
-canGuess = true;
-
-target =
-LOCATIONS[
-Math.floor(
-Math.random()
-*
-LOCATIONS.length
-)
-];
-
-satellite.setView(
-[target.lat,target.lon],
-16
-);
-
-}
-
-function distance(
-lat1,
-lon1,
-lat2,
-lon2
-){
-
-const R = 6371;
-
-const dLat =
-(lat2-lat1)
-*
-Math.PI/180;
-
-const dLon =
-(lon2-lon1)
-*
-Math.PI/180;
-
-const a =
-
-Math.sin(dLat/2)
-*
-Math.sin(dLat/2)
-
-+
-
-Math.cos(
-lat1*Math.PI/180
-)
-
-*
-
-Math.cos(
-lat2*Math.PI/180
-)
-
-*
-
-Math.sin(dLon/2)
-
-*
-
-Math.sin(dLon/2);
-
-return R * 2 *
-
-Math.atan2(
-Math.sqrt(a),
-Math.sqrt(1-a)
-);
-
-}
-
-async function handleGuess(e){
-
-if(!canGuess) return;
-
-canGuess = false;
-
-const d = distance(
-e.latlng.lat,
-e.latlng.lng,
-target.lat,
-target.lon
-);
-
-const marker1 =
-L.marker(
-e.latlng
-).addTo(map);
-
-const marker2 =
-L.marker(
-[target.lat,target.lon]
-).addTo(map);
-
-const line =
-L.polyline(
-[
-e.latlng,
-[target.lat,target.lon]
-],
-{
-color:'#00ffcc'
-}
-).addTo(map);
-
-setTimeout(()=>{
-
-map.removeLayer(marker1);
-map.removeLayer(marker2);
-map.removeLayer(line);
-
-},3000);
-
-if(d < 500){
-
-combo++;
-
-}else{
-
-combo = 0;
-
-lives--;
-
-document.getElementById(
-"lives"
-).innerText = lives;
-
-}
-
-const multiplier =
-1 + combo*0.5;
-
-document.getElementById(
-"combo"
-).innerText =
-"x"
-+
-multiplier.toFixed(1);
-
-if(combo >= 2){
-
-showCombo(multiplier);
-
-}
-
-const points =
-Math.max(
-0,
-Math.round(
-(10000 - d*5)
-*
-multiplier
-)
-);
+const points = Math.max(0,10000 - d*100);
 
 score += points;
 
-document.getElementById(
-"score"
-).innerText = score;
+// ELO system
+if(points > 5000) elo += 25;
+else elo -= 10;
 
-round++;
-
-document.getElementById(
-"round"
-).innerText = round;
-
-await saveScore();
-
-showResult(d,points);
-
-if(lives <= 0){
-
-setTimeout(()=>{
-
-document.getElementById(
-"gameOver"
-).style.display = "flex";
-
-document.getElementById(
-"finalScore"
-).innerText = score;
-
-},2000);
+updateUI();
+newRound();
 
 }
 
+// ---------------- DAILY CHALLENGE ----------------
+function daily(){
+const seed = new Date().toDateString();
+let hash = 0;
+for(let i=0;i<seed.length;i++) hash += seed.charCodeAt(i);
+
+Math.random = mulberry32(hash);
+
+room="DAILY";
+newRound();
 }
 
-function showCombo(mult){
-
-const el =
-document.getElementById(
-"comboEffect"
-);
-
-el.innerText =
-"COMBO x"
-+
-mult.toFixed(1);
-
-el.style.opacity = 1;
-
-setTimeout(()=>{
-
-el.style.opacity = 0;
-
-},1200);
-
+function mulberry32(a){
+return function(){
+let t = a += 0x6D2B79F5;
+t = Math.imul(t ^ t >>> 15, t | 1);
+t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+return ((t ^ t >>> 14) >>> 0) / 4294967296;
+}
 }
 
-function showResult(
-distanceKm,
-points
-){
+// ---------------- MULTIPLAYER ----------------
+async function createRoom(){
+room = Math.random().toString(36).substring(2,7);
 
-document.getElementById(
-"result"
-).style.display = "block";
+await db.from("rooms").insert({
+room,
+score:0
+});
 
-document.getElementById(
-"distanceText"
-).innerText =
-"Distance: "
-+
-Math.round(distanceKm)
-+
-" km";
-
-document.getElementById(
-"pointsText"
-).innerText =
-"Points: +"
-+
-points;
-
-let rating = "BAD";
-
-if(distanceKm < 100){
-
-rating = "PERFECT";
-
-}else if(distanceKm < 500){
-
-rating = "AMAZING";
-
-}else if(distanceKm < 1500){
-
-rating = "GOOD";
-
+updateUI();
 }
 
-document.getElementById(
-"ratingText"
-).innerText =
-"Rating: "
-+
-rating;
-
+function joinRoom(){
+room = prompt("Room code:");
+updateUI();
 }
 
+// ---------------- LEADERBOARD ----------------
 async function saveScore(){
-
-await db
-.from("scores")
-.insert([
-{
-username:username,
-score:score
-}
-]);
-
-loadLeaderboard();
-
+await db.from("scores").insert({
+score,
+elo,
+room
+});
 }
 
-async function loadLeaderboard(){
-
-const { data } =
-await db
-.from("scores")
-.select("*")
-.order(
-"score",
-{
-ascending:false
-}
-)
-.limit(10);
-
-if(!data) return;
-
-let html = "";
-
-for(let i=0;i<data.length;i++){
-
-html += `
-
-<div class="lb-item">
-
-<span>
-${i+1}. ${data[i].username}
-</span>
-
-<span style="color:#00ffcc;">
-${data[i].score}
-</span>
-
-</div>
-
-`;
-
+// ---------------- UI ----------------
+function updateUI(){
+document.getElementById("stats").innerText =
+`Score: ${score} | ELO: ${elo} | Room: ${room}`;
 }
 
-document.getElementById(
-"leaderboardList"
-).innerHTML = html;
-
+// ---------------- INIT ----------------
+function start(){
+newRound();
+updateUI();
 }
 
-db
-.channel('scores-channel')
-.on(
-'postgres_changes',
-{
-event:'INSERT',
-schema:'public',
-table:'scores'
-},
-payload=>{
-
-loadLeaderboard();
-
-}
-)
-.subscribe();
+start();
 
 </script>
 
