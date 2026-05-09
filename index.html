@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>PRO GEO INFINITY ENGINE</title>
+<title>PRO GEO REALITY ENGINE</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
@@ -30,7 +30,6 @@ border-bottom:2px solid #0ff;
 #image{
 position:absolute;
 inset:0;
-background:#000;
 }
 
 #image img{
@@ -83,7 +82,7 @@ cursor:pointer;
 <body>
 
 <div id="top">
-<div>🌐 PRO GEO INFINITY ENGINE</div>
+<div>🌍 PRO GEO REALITY ENGINE</div>
 <div id="stats">Loading...</div>
 </div>
 
@@ -112,16 +111,11 @@ const LOCS=[
 {lat:25.20,lng:55.27,name:"Dubai"}
 ];
 
-const MODES=["earth","hard","chaos","infinity"];
-let mode="earth";
-
 document.addEventListener("DOMContentLoaded",()=>{
 
 map=L.map("map").setView([20,0],2);
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
-attribution:""
-}).addTo(map);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
 map.on("click",guess);
 
@@ -131,9 +125,6 @@ newRound();
 function newRound(){
 
 round++;
-
-// 🎲 INFINITY ENGINE MODE PICK
-mode=MODES[Math.floor(Math.random()*MODES.length)];
 
 target=LOCS[Math.floor(Math.random()*LOCS.length)];
 
@@ -152,10 +143,10 @@ document.getElementById("image").appendChild(img);
 };
 
 img.onerror=()=>{
-img.src="https://source.unsplash.com/1600x900/?street,city";
+img.src="https://source.unsplash.com/1600x900/?street,city,road";
 };
 
-img.src=`https://source.unsplash.com/1600x900/?street,city,cars,roads,${name}`;
+img.src=`https://source.unsplash.com/1600x900/?street,city,cars,${name}`;
 }
 
 function guess(e){
@@ -166,19 +157,12 @@ marker=L.marker([e.latlng.lat,e.latlng.lng]).addTo(map);
 
 let d=distance(e.latlng.lat,e.latlng.lng,target.lat,target.lng);
 
-// 🧠 INFINITY SCORING ENGINE
-let base=10000-d*10;
-
-if(mode==="hard") base*=1.2;
-if(mode==="chaos") base*=Math.random()*1.5;
-if(mode==="infinity") base*=0.8+Math.random();
-
-let pts=Math.max(0,Math.round(base));
+// 🧠 scoring engine
+let pts=Math.max(0,Math.round(10000-d*10));
 score+=pts;
 
-// heat system
 let heat="🔵 COLD";
-if(d<50) heat="⚡ INFINITY PERFECT";
+if(d<50) heat="🔥 PERFECT";
 else if(d<200) heat="🔴 HOT";
 else if(d<1000) heat="🟡 WARM";
 
@@ -200,8 +184,7 @@ document.getElementById("info").innerHTML=
 `<h2>${target.name}</h2>
 <p>${heat}</p>
 <p>Distance: ${Math.round(d)} km</p>
-<p>Score: ${pts}</p>
-<p>Mode: ${mode.toUpperCase()}</p>`;
+<p>Score: ${pts}</p>`;
 
 updateTop(target.name);
 }
@@ -230,7 +213,7 @@ return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
 
 function updateTop(loc){
 document.getElementById("stats").innerText=
-`Score: ${score} | Round: ${round} | Mode: ${mode.toUpperCase()} | Location: ${loc}`;
+`Score: ${score} | Round: ${round} | Location: ${loc}`;
 }
 
 </script>
