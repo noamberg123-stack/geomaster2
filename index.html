@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>PRO GEO REAL FINAL</title>
+<title>PRO GEO DUAL MAP</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
@@ -22,7 +22,7 @@ height:55px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:0 12px;
+padding:0 10px;
 background:#111;
 border-bottom:2px solid #0ff;
 }
@@ -35,7 +35,6 @@ height:calc(100vh - 55px);
 #image{
 position:absolute;
 inset:0;
-background:#000;
 }
 
 #image img{
@@ -44,41 +43,51 @@ height:100%;
 object-fit:cover;
 }
 
-#mapWrap{
+/* 🟢 MINI GUESS MAP */
+#guessMap{
 position:absolute;
-top:10px;
+bottom:10px;
 right:10px;
-width:320px;
-height:220px;
+width:300px;
+height:200px;
 border:2px solid #0ff;
-background:#111;
-display:none;
 z-index:10;
 }
 
-#map{
+/* 🔵 RESULT MAP */
+#resultMapWrap{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+width:80%;
+height:70%;
+background:#111;
+border:2px solid #0ff;
+display:none;
+z-index:20;
+}
+
+#resultMap{
 width:100%;
 height:100%;
 }
 
 #result{
 position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
+top:10px;
+left:10px;
 background:#111;
-padding:15px;
-border:2px solid #0ff;
-display:none;
-text-align:center;
-z-index:20;
+padding:10px;
+border:1px solid #0ff;
+z-index:21;
 }
 
 button{
 background:#0ff;
 border:none;
-padding:8px;
-margin-top:8px;
+padding:6px;
+margin-top:6px;
 font-weight:bold;
 cursor:pointer;
 }
@@ -88,7 +97,7 @@ cursor:pointer;
 <body>
 
 <div id="top">
-<div>🌍 PRO GEO REAL FINAL</div>
+<div>🌍 PRO GEO DUAL MAP</div>
 <div id="stats">Loading...</div>
 </div>
 
@@ -96,12 +105,13 @@ cursor:pointer;
 
 <div id="image">Loading...</div>
 
-<div id="mapWrap">
-<div id="map"></div>
-</div>
+<!-- 🟢 MAP FOR GUESS -->
+<div id="guessMap"></div>
 
-<div id="result">
-<div id="info"></div>
+<!-- 🔵 RESULT MAP -->
+<div id="resultMapWrap">
+<div id="result"></div>
+<div id="resultMap"></div>
 <button onclick="next()">NEXT</button>
 </div>
 
@@ -111,9 +121,9 @@ cursor:pointer;
 
 <script>
 
-let map;
-let marker;
+let guessMap,resultMap;
 let target;
+let marker;
 let score=0;
 let round=0;
 
@@ -128,92 +138,71 @@ const LOCS=[
 
 document.addEventListener("DOMContentLoaded",()=>{
 
-// 🗺️ MAP FIX (no black screen)
-map=L.map("map").setView([20,0],2);
+// 🟢 guess map (always visible)
+guessMap=L.map("guessMap").setView([20,0],2);
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
-attribution:""
-}).addTo(map);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(guessMap);
 
-map.on("click",guess);
+guessMap.on("click",guess);
 
 newRound();
 });
 
 function newRound(){
+
 round++;
 
 target=LOCS[Math.floor(Math.random()*LOCS.length)];
 
-// 📸 guaranteed image (NO black screen)
-loadImage(target.name);
-
-// reset map view
-if(map){
-map.setView([20,0],2);
-}
+// image
+document.getElementById("image").innerHTML=
+`<img src="https://source.unsplash.com/1600x900/?street,city,${target.name}"/>`;
 
 updateTop("???");
+
+if(resultMap){
+resultMap.remove();
+resultMap=null;
 }
-
-function loadImage(name){
-
-let fallback=`https://source.unsplash.com/1600x900/?street,city,${name}`;
-
-// Wikipedia try first
-fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${name}`)
-.then(r=>r.json())
-.then(data=>{
-
-let img=data?.thumbnail?.source || fallback;
-
-document.getElementById("image").innerHTML=
-`<img src="${img}" onerror="this.src='${fallback}'"/>`;
-
-})
-.catch(()=>{
-
-document.getElementById("image").innerHTML=
-`<img src="${fallback}"/>`;
-
-});
 }
 
 function guess(e){
 
-if(marker) map.removeLayer(marker);
+if(marker) guessMap.removeLayer(marker);
 
-marker=L.marker([e.latlng.lat,e.latlng.lng]).addTo(map);
+marker=L.marker([e.latlng.lat,e.latlng.lng]).addTo(guessMap);
 
-let d=distance(
-e.latlng.lat,
-e.latlng.lng,
-target.lat,
-target.lng
-);
-
+let d=distance(e.latlng.lat,e.latlng.lng,target.lat,target.lng);
 let pts=Math.max(0,Math.round(10000-d*10));
 score+=pts;
 
-// show map
-document.getElementById("mapWrap").style.display="block";
-map.invalidateSize();
-
-L.marker([target.lat,target.lng]).addTo(map);
-map.setView([target.lat,target.lng],3);
-
-document.getElementById("result").style.display="block";
-document.getElementById("info").innerHTML=
+// 🔵 show result map
+document.getElementById("resultMapWrap").style.display="block";
+document.getElementById("result").innerHTML=
 `<h3>${target.name}</h3>
 <p>Distance: ${Math.round(d)} km</p>
 <p>Points: ${pts}</p>`;
+
+// init result map
+resultMap=L.map("resultMap").setView([target.lat,target.lng],3);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(resultMap);
+
+L.marker([target.lat,target.lng]).addTo(resultMap);
+L.marker([e.latlng.lat,e.latlng.lng]).addTo(resultMap);
 
 updateTop(target.name);
 }
 
 function next(){
-document.getElementById("result").style.display="none";
-document.getElementById("mapWrap").style.display="none";
+
+document.getElementById("resultMapWrap").style.display="none";
+
+if(resultMap){
+resultMap.remove();
+resultMap=null;
+}
+
 newRound();
 }
 
@@ -221,13 +210,9 @@ function distance(a,b,c,d){
 const R=6371;
 const dLat=(c-a)*Math.PI/180;
 const dLon=(d-b)*Math.PI/180;
-
-const x=
-Math.sin(dLat/2)**2+
-Math.cos(a*Math.PI/180)*
-Math.cos(c*Math.PI/180)*
+const x=Math.sin(dLat/2)**2+
+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*
 Math.sin(dLon/2)**2;
-
 return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
 }
 
