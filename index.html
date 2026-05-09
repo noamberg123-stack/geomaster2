@@ -2,15 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Geo Ultra Final</title>
+<title>GEO ULTRA OMEGA</title>
 
 <link rel="stylesheet"
 href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<audio id="correctSound"
+src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
+
+<audio id="wrongSound"
+src="https://assets.mixkit.co/active_storage/sfx/2955/2955-preview.mp3"></audio>
 
 <style>
 
@@ -25,6 +30,47 @@ background:#050505;
 color:white;
 font-family:Arial;
 overflow:hidden;
+}
+
+#overlay{
+position:absolute;
+inset:0;
+background:black;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:999999;
+}
+
+.title{
+font-size:80px;
+font-weight:bold;
+color:#00ffcc;
+text-shadow:0 0 30px #00ffcc;
+margin-bottom:20px;
+}
+
+.subtitle{
+color:#777;
+font-size:22px;
+margin-bottom:40px;
+}
+
+.play-btn{
+background:#00ffcc;
+color:black;
+border:none;
+padding:18px 45px;
+border-radius:14px;
+font-size:24px;
+font-weight:bold;
+cursor:pointer;
+transition:0.2s;
+}
+
+.play-btn:hover{
+transform:scale(1.05);
 }
 
 #topbar{
@@ -45,7 +91,7 @@ color:#00ffcc;
 
 .stats{
 display:flex;
-gap:20px;
+gap:18px;
 align-items:center;
 }
 
@@ -74,43 +120,41 @@ min-width:350px;
 height:100%;
 }
 
-#overlay{
+#timerBar{
 position:absolute;
-inset:0;
-background:rgba(0,0,0,0.95);
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-z-index:99999;
-}
-
-.title{
-font-size:72px;
-color:#00ffcc;
-margin-bottom:20px;
-text-shadow:0 0 20px #00ffcc;
-}
-
-.subtitle{
-color:#777;
-margin-bottom:40px;
-font-size:20px;
-}
-
-.play-btn{
+top:0;
+left:0;
+height:6px;
+width:100%;
 background:#00ffcc;
-color:black;
-border:none;
-padding:18px 40px;
-font-size:24px;
-border-radius:14px;
-cursor:pointer;
-font-weight:bold;
+z-index:999;
 }
 
-.play-btn:hover{
-transform:scale(1.05);
+#comboEffect{
+position:absolute;
+top:90px;
+left:50%;
+transform:translateX(-50%);
+font-size:46px;
+font-weight:bold;
+color:gold;
+opacity:0;
+transition:0.3s;
+z-index:999999;
+pointer-events:none;
+}
+
+#achievement{
+position:absolute;
+top:20px;
+right:20px;
+background:#111;
+border:2px solid gold;
+padding:15px;
+border-radius:12px;
+display:none;
+z-index:999999;
+font-weight:bold;
 }
 
 #result{
@@ -123,43 +167,37 @@ border:2px solid #00ffcc;
 padding:30px;
 border-radius:20px;
 display:none;
-z-index:99999;
+z-index:999999;
+width:360px;
 text-align:center;
-width:350px;
 }
 
 .next-btn{
 margin-top:20px;
 background:#00ffcc;
-border:none;
 color:black;
+border:none;
 padding:12px 25px;
 border-radius:10px;
+font-weight:bold;
 cursor:pointer;
-font-weight:bold;
 }
 
-#comboEffect{
+#gameOver{
 position:absolute;
-top:90px;
-left:50%;
-transform:translateX(-50%);
-font-size:42px;
-font-weight:bold;
-color:gold;
-opacity:0;
-transition:0.3s;
-z-index:99999;
+inset:0;
+background:black;
+display:none;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:999999;
 }
 
-#timerBar{
-position:absolute;
-top:0;
-left:0;
-width:100%;
-height:6px;
-background:#00ffcc;
-z-index:999;
+#gameOver h1{
+font-size:90px;
+color:red;
+margin-bottom:20px;
 }
 
 .power-buttons{
@@ -176,35 +214,15 @@ border-radius:8px;
 cursor:pointer;
 }
 
-#achievement{
-position:absolute;
-top:20px;
-right:20px;
-background:#111;
-border:2px solid gold;
-padding:15px;
-border-radius:12px;
-display:none;
-z-index:999999;
-font-weight:bold;
+.power-btn:hover{
+background:#00ffcc;
+color:black;
 }
 
-#gameOver{
-position:absolute;
-inset:0;
-background:black;
-display:none;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-z-index:999999;
-}
-
-#gameOver h1{
-font-size:80px;
-color:red;
-margin-bottom:20px;
-}
+.rank-bronze{color:#cd7f32;}
+.rank-silver{color:silver;}
+.rank-gold{color:gold;}
+.rank-diamond{color:#00ffff;}
 
 @media(max-width:900px){
 
@@ -221,6 +239,15 @@ height:40%;
 height:60%;
 }
 
+.stats{
+flex-wrap:wrap;
+font-size:14px;
+}
+
+.title{
+font-size:48px;
+}
+
 }
 
 </style>
@@ -231,11 +258,11 @@ height:60%;
 <div id="overlay">
 
 <div class="title">
-GEO ULTRA FINAL
+GEO ULTRA OMEGA
 </div>
 
 <div class="subtitle">
-Satellite Guessing Challenge
+Ultimate Satellite Guessing Game
 </div>
 
 <button class="play-btn"
@@ -298,6 +325,12 @@ id="level">1</span>
 </div>
 
 <div class="stat">
+Rank:
+<span class="value rank-bronze"
+id="rank">Bronze</span>
+</div>
+
+<div class="stat">
 Time:
 <span class="value"
 id="timer">30</span>
@@ -337,9 +370,17 @@ onclick="extraTime()">
 
 <h2>ROUND COMPLETE</h2>
 
+<br>
+
 <p id="distanceText"></p>
 
+<br>
+
 <p id="pointsText"></p>
+
+<br>
+
+<p id="ratingText"></p>
 
 <button class="next-btn"
 onclick="nextRound()">
@@ -361,6 +402,13 @@ Final Score:
 
 <br>
 
+<p style="font-size:24px;">
+Highscore:
+<span id="highscore"></span>
+</p>
+
+<br>
+
 <button class="play-btn"
 onclick="location.reload()">
 
@@ -374,53 +422,21 @@ PLAY AGAIN
 
 const LOCATIONS = [
 
-{
-name:"New York",
-lat:40.6892,
-lon:-74.0445
-},
-
-{
-name:"Paris",
-lat:48.8584,
-lon:2.2945
-},
-
-{
-name:"Tokyo",
-lat:35.6762,
-lon:139.6503
-},
-
-{
-name:"Sydney",
-lat:-33.8568,
-lon:151.2153
-},
-
-{
-name:"Dubai",
-lat:25.1972,
-lon:55.2744
-},
-
-{
-name:"Rome",
-lat:41.8902,
-lon:12.4922
-},
-
-{
-name:"London",
-lat:51.5074,
-lon:-0.1278
-},
-
-{
-name:"Rio",
-lat:-22.9068,
-lon:-43.1729
-}
+{name:"New York",lat:40.6892,lon:-74.0445},
+{name:"Paris",lat:48.8584,lon:2.2945},
+{name:"Tokyo",lat:35.6762,lon:139.6503},
+{name:"Sydney",lat:-33.8568,lon:151.2153},
+{name:"Dubai",lat:25.1972,lon:55.2744},
+{name:"Rome",lat:41.8902,lon:12.4922},
+{name:"London",lat:51.5074,lon:-0.1278},
+{name:"Rio",lat:-22.9068,lon:-43.1729},
+{name:"Jerusalem",lat:31.7683,lon:35.2137},
+{name:"Cape Town",lat:-33.9249,lon:18.4241},
+{name:"Bangkok",lat:13.7563,lon:100.5018},
+{name:"Berlin",lat:52.5200,lon:13.4050},
+{name:"Toronto",lat:43.6532,lon:-79.3832},
+{name:"Singapore",lat:1.3521,lon:103.8198},
+{name:"Iceland",lat:64.9631,lon:-19.0208}
 
 ];
 
@@ -434,6 +450,7 @@ let combo = 0;
 let lives = 3;
 let xp = 0;
 let level = 1;
+let rank = "Bronze";
 
 let canGuess = true;
 
@@ -456,6 +473,20 @@ function startGame(){
 
 document.getElementById("overlay")
 .style.display = "none";
+
+const hs =
+localStorage.getItem(
+"geoUltraHighscore"
+);
+
+if(hs){
+
+console.log(
+"Highscore:",
+hs
+);
+
+}
 
 satellite =
 L.map('satellite',
@@ -554,16 +585,12 @@ const R = 6371;
 const dLat =
 (lat2-lat1)
 *
-Math.PI
-/
-180;
+Math.PI/180;
 
 const dLon =
 (lon2-lon1)
 *
-Math.PI
-/
-180;
+Math.PI/180;
 
 const a =
 
@@ -651,11 +678,19 @@ if(d < 500){
 
 combo++;
 
+document
+.getElementById("correctSound")
+.play();
+
 }else{
 
 combo = 0;
 
 loseLife();
+
+document
+.getElementById("wrongSound")
+.play();
 }
 
 const multiplier =
@@ -696,6 +731,8 @@ level =
 Math.floor(xp/10000)
 +1;
 
+updateRank();
+
 scoreEl.innerText = score;
 
 round++;
@@ -710,6 +747,11 @@ document
 .getElementById("level")
 .innerText = level;
 
+localStorage.setItem(
+"geoUltraHighscore",
+score
+);
+
 if(score >= 50000){
 
 unlockAchievement(
@@ -718,6 +760,43 @@ unlockAchievement(
 }
 
 showResult(d,points);
+}
+
+function updateRank(){
+
+const rankEl =
+document.getElementById("rank");
+
+if(score >= 100000){
+
+rank = "Diamond";
+
+rankEl.className =
+"value rank-diamond";
+
+}else if(score >= 50000){
+
+rank = "Gold";
+
+rankEl.className =
+"value rank-gold";
+
+}else if(score >= 20000){
+
+rank = "Silver";
+
+rankEl.className =
+"value rank-silver";
+
+}else{
+
+rank = "Bronze";
+
+rankEl.className =
+"value rank-bronze";
+}
+
+rankEl.innerText = rank;
 }
 
 function showCombo(mult){
@@ -768,6 +847,29 @@ document.getElementById(
 +
 points;
 
+let rating = "BAD";
+
+if(distanceKm < 100){
+
+rating = "PERFECT";
+
+}else if(distanceKm < 500){
+
+rating = "AMAZING";
+
+}else if(distanceKm < 1500){
+
+rating = "GOOD";
+}
+
+document.getElementById(
+"ratingText"
+)
+.innerText =
+"Rating: "
++
+rating;
+
 }
 
 function radarScan(){
@@ -804,6 +906,13 @@ if(lives <= 0){
 document
 .getElementById("finalScore")
 .innerText = score;
+
+document
+.getElementById("highscore")
+.innerText =
+localStorage.getItem(
+"geoUltraHighscore"
+) || 0;
 
 document
 .getElementById("gameOver")
