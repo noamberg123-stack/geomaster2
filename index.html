@@ -3,33 +3,70 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>GEO IMAGE FIXED</title>
+<title>GEO IMAGE REAL FIX</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
-html,body{margin:0;height:100%;overflow:hidden;font-family:Arial;background:#05070a;color:#fff;}
-#top{height:60px;display:flex;justify-content:space-between;align-items:center;padding:0 15px;background:#111;border-bottom:2px solid #0ff;}
-#game{display:grid;grid-template-columns:1fr 0.35fr;height:calc(100vh - 60px);}
+html,body{
+margin:0;
+height:100%;
+overflow:hidden;
+font-family:Arial;
+background:#0a0a0a;
+color:white;
+}
+
+#top{
+height:60px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 15px;
+background:#111;
+border-bottom:2px solid #0ff;
+}
+
+#game{
+display:grid;
+grid-template-columns:1fr 0.35fr;
+height:calc(100vh - 60px);
+}
+
 #sat,#map{height:100%;width:100%;}
-#view{position:absolute;bottom:10px;left:10px;right:10px;height:180px;border:2px solid #0ff;overflow:hidden;}
-#view img{width:100%;height:100%;object-fit:cover;}
-#mapWrap{position:relative;}
+
+#view{
+position:absolute;
+bottom:10px;
+left:10px;
+right:10px;
+height:180px;
+border:2px solid #0ff;
+overflow:hidden;
+background:black;
+}
+
+#view img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
 </style>
 </head>
 
 <body>
 
 <div id="top">
-<div id="title">🌍 GEO IMAGE FIXED</div>
-<div id="stats">Score: 0 | Round: 0 | Location: Loading...</div>
+<div>🌍 GEO REAL IMAGE</div>
+<div id="stats">Loading...</div>
 </div>
 
 <div id="game">
 <div id="sat"></div>
-<div id="mapWrap">
+
+<div style="position:relative;">
 <div id="map"></div>
-<div id="view">Loading...</div>
+<div id="view">Loading image...</div>
 </div>
 </div>
 
@@ -39,23 +76,19 @@ html,body{margin:0;height:100%;overflow:hidden;font-family:Arial;background:#050
 
 let sat,map;
 let target;
-let score=0;
-let round=0;
-let country="Loading...";
+let score=0,round=0;
+let locationName="Loading...";
 
 const LOCS=[
-{lat:48.85,lng:2.35},
-{lat:40.71,lng:-74},
-{lat:35.68,lng:139.69},
-{lat:31.77,lng:35.21},
-{lat:-33.86,lng:151.21},
-{lat:25.20,lng:55.27}
+{lat:48.85,lng:2.35,name:"Paris"},
+{lat:40.71,lng:-74,name:"New York"},
+{lat:35.68,lng:139.69,name:"Tokyo"},
+{lat:31.77,lng:35.21,name:"Jerusalem"},
+{lat:-33.86,lng:151.21,name:"Sydney"},
+{lat:25.20,lng:55.27,name:"Dubai"}
 ];
 
-// 🟢 יציב יותר מ-window.onload
-document.addEventListener("DOMContentLoaded",init);
-
-function init(){
+document.addEventListener("DOMContentLoaded",()=>{
 
 sat=L.map("sat").setView([20,0],2);
 L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}")
@@ -67,7 +100,7 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 map.on("click",guess);
 
 newRound();
-}
+});
 
 function newRound(){
 round++;
@@ -76,44 +109,38 @@ target=LOCS[Math.floor(Math.random()*LOCS.length)];
 
 sat.setView([target.lat,target.lng],3);
 
-// 📸 תמיד תמונה עובדת (ללא תלות ב-unsplash fail)
-const url=`https://picsum.photos/seed/${target.lat+target.lng}/800/400`;
+// 📸 תמונות אמיתיות לפי עיר (ויקיפדיה)
+loadImage(target.name);
 
+locationName=target.name;
+updateTop();
+
+}
+
+function loadImage(query){
+
+fetch(`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&titles=${query}&pithumbsize=800&origin=*`)
+.then(r=>r.json())
+.then(data=>{
+
+let pages=data.query.pages;
+let page=pages[Object.keys(pages)[0]];
+
+if(page && page.thumbnail){
 document.getElementById("view").innerHTML=
-`<img src="${url}"/>`;
-
-updateTop("...");
-fetchCountry(target.lat,target.lng);
+`<img src="${page.thumbnail.source}"/>`;
+}else{
+document.getElementById("view").innerHTML=
+`<div style="padding:20px">No image found</div>`;
 }
 
-async function fetchCountry(lat,lng){
-
-try{
-const res=await fetch(
-`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-);
-
-const data=await res.json();
-
-// 🛡️ בטוח יותר ממה שהיה
-country=data?.address?.country || "Unknown";
-
-}catch(e){
-country="Unknown";
-}
-
-updateTop(country);
-}
-
-function updateTop(c){
-document.getElementById("stats").innerText=
-`Score: ${score} | Round: ${round} | Location: ${c}`;
+});
 }
 
 function guess(e){
 
 const d=distance(e.latlng.lat,e.latlng.lng,target.lat,target.lng);
-const pts=Math.max(0,Math.round(10000-d*10));
+const pts=Math.max(0,10000-d*10);
 score+=pts;
 
 alert(`Distance: ${Math.round(d)} km\nPoints: ${pts}`);
@@ -129,6 +156,11 @@ const x=Math.sin(dLat/2)**2+
 Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*
 Math.sin(dLon/2)**2;
 return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+}
+
+function updateTop(){
+document.getElementById("stats").innerText=
+`Score: ${score} | Round: ${round} | Location: ${locationName}`;
 }
 
 </script>
