@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-<title>Geo Ultra Satellite</title>
+<title>Geo Ultra Final</title>
 
 <link rel="stylesheet"
 href="https://unpkg.com/leaflet/dist/leaflet.css"/>
@@ -14,191 +15,211 @@ href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <style>
 
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
 body{
-    background:#050505;
-    color:white;
-    font-family:Arial;
-    overflow:hidden;
+background:#050505;
+color:white;
+font-family:Arial;
+overflow:hidden;
 }
 
 #topbar{
-    height:70px;
-    background:#111;
-    border-bottom:2px solid #222;
-
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    padding:0 20px;
+height:70px;
+background:#111;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 20px;
+border-bottom:2px solid #222;
 }
 
 .logo{
-    color:#00ffcc;
-    font-size:28px;
-    font-weight:bold;
+font-size:28px;
+font-weight:bold;
+color:#00ffcc;
 }
 
 .stats{
-    display:flex;
-    gap:20px;
+display:flex;
+gap:20px;
+align-items:center;
 }
 
 .stat{
-    color:#aaa;
+color:#888;
 }
 
 .value{
-    color:white;
-    font-weight:bold;
+color:white;
+font-weight:bold;
 }
 
 #game{
-    display:flex;
-    height:calc(100vh - 70px);
+display:flex;
+height:calc(100vh - 70px);
 }
 
 #satellite{
-    flex:1;
+flex:1;
+position:relative;
 }
 
 #map{
-    width:35%;
-    min-width:350px;
-    height:100%;
+width:35%;
+min-width:350px;
+height:100%;
 }
 
 #overlay{
-    position:absolute;
-    inset:0;
-    background:rgba(0,0,0,0.95);
-
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-
-    z-index:9999;
+position:absolute;
+inset:0;
+background:rgba(0,0,0,0.95);
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+z-index:99999;
 }
 
 .title{
-    font-size:72px;
-    color:#00ffcc;
-    margin-bottom:20px;
+font-size:72px;
+color:#00ffcc;
+margin-bottom:20px;
+text-shadow:0 0 20px #00ffcc;
 }
 
 .subtitle{
-    color:#777;
-    margin-bottom:40px;
+color:#777;
+margin-bottom:40px;
+font-size:20px;
 }
 
 .play-btn{
-    background:#00ffcc;
-    color:black;
+background:#00ffcc;
+color:black;
+border:none;
+padding:18px 40px;
+font-size:24px;
+border-radius:14px;
+cursor:pointer;
+font-weight:bold;
+}
 
-    border:none;
-
-    padding:18px 40px;
-
-    border-radius:15px;
-
-    cursor:pointer;
-
-    font-size:22px;
-    font-weight:bold;
+.play-btn:hover{
+transform:scale(1.05);
 }
 
 #result{
-    position:absolute;
-
-    top:50%;
-    left:50%;
-
-    transform:translate(-50%,-50%);
-
-    background:#111;
-
-    border:2px solid #00ffcc;
-
-    padding:30px;
-
-    border-radius:20px;
-
-    display:none;
-
-    z-index:99999;
-
-    text-align:center;
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:#111;
+border:2px solid #00ffcc;
+padding:30px;
+border-radius:20px;
+display:none;
+z-index:99999;
+text-align:center;
+width:350px;
 }
 
 .next-btn{
-    margin-top:20px;
-
-    background:#00ffcc;
-
-    color:black;
-
-    border:none;
-
-    padding:12px 25px;
-
-    border-radius:10px;
-
-    cursor:pointer;
-}
-
-#timerBar{
-    position:absolute;
-
-    top:0;
-    left:0;
-
-    width:100%;
-    height:6px;
-
-    background:#00ffcc;
-
-    z-index:999;
+margin-top:20px;
+background:#00ffcc;
+border:none;
+color:black;
+padding:12px 25px;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
 }
 
 #comboEffect{
-    position:absolute;
+position:absolute;
+top:90px;
+left:50%;
+transform:translateX(-50%);
+font-size:42px;
+font-weight:bold;
+color:gold;
+opacity:0;
+transition:0.3s;
+z-index:99999;
+}
 
-    top:90px;
-    left:50%;
+#timerBar{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:6px;
+background:#00ffcc;
+z-index:999;
+}
 
-    transform:translateX(-50%);
+.power-buttons{
+display:flex;
+gap:10px;
+}
 
-    color:gold;
+.power-btn{
+background:#222;
+border:1px solid #00ffcc;
+color:#00ffcc;
+padding:8px 14px;
+border-radius:8px;
+cursor:pointer;
+}
 
-    font-size:42px;
+#achievement{
+position:absolute;
+top:20px;
+right:20px;
+background:#111;
+border:2px solid gold;
+padding:15px;
+border-radius:12px;
+display:none;
+z-index:999999;
+font-weight:bold;
+}
 
-    opacity:0;
+#gameOver{
+position:absolute;
+inset:0;
+background:black;
+display:none;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:999999;
+}
 
-    transition:0.3s;
-
-    z-index:99999;
+#gameOver h1{
+font-size:80px;
+color:red;
+margin-bottom:20px;
 }
 
 @media(max-width:900px){
 
-    #game{
-        flex-direction:column;
-    }
+#game{
+flex-direction:column;
+}
 
-    #map{
-        width:100%;
-        height:40%;
-    }
+#map{
+width:100%;
+height:40%;
+}
 
-    #satellite{
-        height:60%;
-    }
+#satellite{
+height:60%;
+}
 
 }
 
@@ -209,87 +230,143 @@ body{
 
 <div id="overlay">
 
-    <div class="title">
-        GEO ULTRA
-    </div>
+<div class="title">
+GEO ULTRA FINAL
+</div>
 
-    <div class="subtitle">
-        Satellite Challenge
-    </div>
+<div class="subtitle">
+Satellite Guessing Challenge
+</div>
 
-    <button class="play-btn"
-    onclick="startGame()">
+<button class="play-btn"
+onclick="startGame()">
 
-        START
+START GAME
 
-    </button>
+</button>
 
 </div>
 
 <div id="comboEffect"></div>
 
+<div id="achievement">
+🏆 Achievement
+</div>
+
 <div id="topbar">
 
-    <div class="logo">
-        🌍 GEO ULTRA
-    </div>
+<div class="logo">
+🌍 GEO ULTRA
+</div>
 
-    <div class="stats">
+<div class="stats">
 
-        <div class="stat">
-            Score:
-            <span class="value"
-            id="score">0</span>
-        </div>
+<div class="stat">
+Score:
+<span class="value"
+id="score">0</span>
+</div>
 
-        <div class="stat">
-            Round:
-            <span class="value"
-            id="round">1</span>
-        </div>
+<div class="stat">
+Round:
+<span class="value"
+id="round">1</span>
+</div>
 
-        <div class="stat">
-            Combo:
-            <span class="value"
-            id="combo">x1</span>
-        </div>
+<div class="stat">
+Combo:
+<span class="value"
+id="combo">x1</span>
+</div>
 
-        <div class="stat">
-            Time:
-            <span class="value"
-            id="timer">30</span>
-        </div>
+<div class="stat">
+Lives:
+<span class="value"
+id="lives">3</span>
+</div>
 
-    </div>
+<div class="stat">
+XP:
+<span class="value"
+id="xp">0</span>
+</div>
+
+<div class="stat">
+Level:
+<span class="value"
+id="level">1</span>
+</div>
+
+<div class="stat">
+Time:
+<span class="value"
+id="timer">30</span>
+</div>
+
+</div>
+
+<div class="power-buttons">
+
+<button class="power-btn"
+onclick="radarScan()">
+RADAR
+</button>
+
+<button class="power-btn"
+onclick="extraTime()">
++10 SEC
+</button>
+
+</div>
 
 </div>
 
 <div id="game">
 
-    <div id="satellite">
+<div id="satellite">
 
-        <div id="timerBar"></div>
+<div id="timerBar"></div>
 
-    </div>
+</div>
 
-    <div id="map"></div>
+<div id="map"></div>
 
 </div>
 
 <div id="result">
 
-    <h2>ROUND COMPLETE</h2>
+<h2>ROUND COMPLETE</h2>
 
-    <p id="distanceText"></p>
+<p id="distanceText"></p>
 
-    <p id="pointsText"></p>
+<p id="pointsText"></p>
 
-    <button class="next-btn"
-    onclick="nextRound()">
+<button class="next-btn"
+onclick="nextRound()">
 
-        NEXT ROUND
+NEXT ROUND
 
-    </button>
+</button>
+
+</div>
+
+<div id="gameOver">
+
+<h1>GAME OVER</h1>
+
+<p style="font-size:32px;">
+Final Score:
+<span id="finalScore"></span>
+</p>
+
+<br>
+
+<button class="play-btn"
+onclick="location.reload()">
+
+PLAY AGAIN
+
+</button>
 
 </div>
 
@@ -331,6 +408,18 @@ lon:55.2744
 name:"Rome",
 lat:41.8902,
 lon:12.4922
+},
+
+{
+name:"London",
+lat:51.5074,
+lon:-0.1278
+},
+
+{
+name:"Rio",
+lat:-22.9068,
+lon:-43.1729
 }
 
 ];
@@ -342,6 +431,9 @@ let target;
 let score = 0;
 let round = 1;
 let combo = 0;
+let lives = 3;
+let xp = 0;
+let level = 1;
 
 let canGuess = true;
 
@@ -362,86 +454,92 @@ document.getElementById("timer");
 
 function startGame(){
 
-    document.getElementById("overlay")
-    .style.display = "none";
+document.getElementById("overlay")
+.style.display = "none";
 
-    satellite =
-    L.map('satellite',
-    {
-        zoomControl:false
-    })
-    .setView([20,0],2);
+satellite =
+L.map('satellite',
+{
+zoomControl:false
+})
+.setView([20,0],2);
 
-    L.tileLayer(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-    ).addTo(satellite);
+L.tileLayer(
+'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+).addTo(satellite);
 
-    map =
-    L.map('map')
-    .setView([20,0],2);
+map =
+L.map('map')
+.setView([20,0],2);
 
-    L.tileLayer(
-    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-    ).addTo(map);
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+).addTo(map);
 
-    map.on('click',handleGuess);
+map.on('click',handleGuess);
 
-    nextRound();
+nextRound();
 }
 
 function nextRound(){
 
-    document.getElementById("result")
-    .style.display = "none";
+document.getElementById("result")
+.style.display = "none";
 
-    canGuess = true;
+canGuess = true;
 
-    target =
-    LOCATIONS[
-        Math.floor(Math.random()*LOCATIONS.length)
-    ];
+target =
+LOCATIONS[
+Math.floor(
+Math.random()
+*
+LOCATIONS.length
+)
+];
 
-    satellite.setView(
-        [target.lat,target.lon],
-        15
-    );
+satellite.setView(
+[target.lat,target.lon],
+15
+);
 
-    resetTimer();
+resetTimer();
 }
 
 function resetTimer(){
 
-    clearInterval(timer);
+clearInterval(timer);
 
-    timeLeft = 30;
+timeLeft = 30;
 
-    timerEl.innerText = timeLeft;
+timerEl.innerText = timeLeft;
 
-    const bar =
-    document.getElementById("timerBar");
+const bar =
+document.getElementById("timerBar");
 
-    bar.style.width = "100%";
+bar.style.width = "100%";
 
-    timer =
-    setInterval(()=>{
+timer =
+setInterval(()=>{
 
-        timeLeft--;
+timeLeft--;
 
-        timerEl.innerText = timeLeft;
+timerEl.innerText = timeLeft;
 
-        bar.style.width =
-        (timeLeft/30)*100 + "%";
+bar.style.width =
+(timeLeft/30)*100 + "%";
 
-        if(timeLeft <= 0){
+if(timeLeft <= 0){
 
-            clearInterval(timer);
+clearInterval(timer);
 
-            canGuess = false;
+loseLife();
 
-            showResult(20000,0);
-        }
+showResult(20000,0);
 
-    },1000);
+canGuess = false;
+}
+
+},1000);
 }
 
 function distance(
@@ -451,167 +549,290 @@ lat2,
 lon2
 ){
 
-    const R = 6371;
+const R = 6371;
 
-    const dLat =
-    (lat2-lat1)*Math.PI/180;
+const dLat =
+(lat2-lat1)
+*
+Math.PI
+/
+180;
 
-    const dLon =
-    (lon2-lon1)*Math.PI/180;
+const dLon =
+(lon2-lon1)
+*
+Math.PI
+/
+180;
 
-    const a =
+const a =
 
-    Math.sin(dLat/2)*
-    Math.sin(dLat/2)
+Math.sin(dLat/2)
+*
+Math.sin(dLat/2)
 
-    +
++
 
-    Math.cos(lat1*Math.PI/180)
+Math.cos(
+lat1*Math.PI/180
+)
 
-    *
+*
 
-    Math.cos(lat2*Math.PI/180)
+Math.cos(
+lat2*Math.PI/180
+)
 
-    *
+*
 
-    Math.sin(dLon/2)
+Math.sin(dLon/2)
 
-    *
+*
 
-    Math.sin(dLon/2);
+Math.sin(dLon/2);
 
-    return R * 2 *
+return R * 2 *
 
-    Math.atan2(
-        Math.sqrt(a),
-        Math.sqrt(1-a)
-    );
+Math.atan2(
+Math.sqrt(a),
+Math.sqrt(1-a)
+);
+
 }
 
 function handleGuess(e){
 
-    if(!canGuess) return;
+if(!canGuess) return;
 
-    canGuess = false;
+canGuess = false;
 
-    clearInterval(timer);
+clearInterval(timer);
 
-    const d = distance(
-        e.latlng.lat,
-        e.latlng.lng,
-        target.lat,
-        target.lon
-    );
+const d = distance(
+e.latlng.lat,
+e.latlng.lng,
+target.lat,
+target.lon
+);
 
-    const marker1 =
-    L.marker(e.latlng)
-    .addTo(map);
+const marker1 =
+L.marker(e.latlng)
+.addTo(map);
 
-    const marker2 =
-    L.marker(
-        [target.lat,target.lon]
-    )
-    .addTo(map);
+const marker2 =
+L.marker(
+[target.lat,target.lon]
+)
+.addTo(map);
 
-    const line =
-    L.polyline(
-    [
-        e.latlng,
-        [target.lat,target.lon]
-    ],
-    {
-        color:'#00ffcc'
-    })
-    .addTo(map);
+const line =
+L.polyline(
+[
+e.latlng,
+[target.lat,target.lon]
+],
+{
+color:'#00ffcc'
+}
+)
+.addTo(map);
 
-    if(d < 500){
+setTimeout(()=>{
 
-        combo++;
+map.removeLayer(marker1);
 
-    }else{
+map.removeLayer(marker2);
 
-        combo = 0;
-    }
+map.removeLayer(line);
 
-    const multiplier =
-    1 + combo*0.5;
+},3000);
 
-    comboEl.innerText =
-    "x" +
-    multiplier.toFixed(1);
+if(d < 500){
 
-    if(combo >= 2){
+combo++;
 
-        showCombo(multiplier);
-    }
+}else{
 
-    const points =
-    Math.max(
-        0,
-        Math.round(
-            (10000 - d*5)
-            *
-            multiplier
-        )
-    );
+combo = 0;
 
-    score += points;
+loseLife();
+}
 
-    scoreEl.innerText = score;
+const multiplier =
+1 + combo*0.5;
 
-    round++;
+comboEl.innerText =
+"x"
++
+multiplier.toFixed(1);
 
-    roundEl.innerText = round;
+if(combo >= 2){
 
-    showResult(d,points);
+showCombo(multiplier);
+}
 
-    setTimeout(()=>{
+if(combo >= 5){
 
-        map.removeLayer(marker1);
+unlockAchievement(
+"Combo Master"
+);
+}
 
-        map.removeLayer(marker2);
+const points =
+Math.max(
+0,
+Math.round(
+(10000 - d*5)
+*
+multiplier
+)
+);
 
-        map.removeLayer(line);
+score += points;
 
-    },3000);
+xp += points;
+
+level =
+Math.floor(xp/10000)
++1;
+
+scoreEl.innerText = score;
+
+round++;
+
+roundEl.innerText = round;
+
+document
+.getElementById("xp")
+.innerText = xp;
+
+document
+.getElementById("level")
+.innerText = level;
+
+if(score >= 50000){
+
+unlockAchievement(
+"World Explorer"
+);
+}
+
+showResult(d,points);
 }
 
 function showCombo(mult){
 
-    const el =
-    document.getElementById("comboEffect");
+const el =
+document.getElementById(
+"comboEffect"
+);
 
-    el.innerText =
-    "COMBO x" +
-    mult.toFixed(1);
+el.innerText =
+"COMBO x"
++
+mult.toFixed(1);
 
-    el.style.opacity = 1;
+el.style.opacity = 1;
 
-    setTimeout(()=>{
+setTimeout(()=>{
 
-        el.style.opacity = 0;
+el.style.opacity = 0;
 
-    },1200);
+},1200);
+
 }
 
-function showResult(distanceKm,points){
+function showResult(
+distanceKm,
+points
+){
 
-    document.getElementById("result")
-    .style.display = "block";
+document.getElementById("result")
+.style.display = "block";
 
-    document.getElementById("distanceText")
-    .innerText =
-    "Distance: "
-    +
-    Math.round(distanceKm)
-    +
-    " km";
+document.getElementById(
+"distanceText"
+)
+.innerText =
+"Distance: "
++
+Math.round(distanceKm)
++
+" km";
 
-    document.getElementById("pointsText")
-    .innerText =
-    "Points: +"
-    +
-    points;
+document.getElementById(
+"pointsText"
+)
+.innerText =
+"Points: +"
++
+points;
+
+}
+
+function radarScan(){
+
+L.circle(
+[target.lat,target.lon],
+{
+radius:400000,
+color:'yellow'
+}
+)
+.addTo(map);
+
+}
+
+function extraTime(){
+
+timeLeft += 10;
+
+timerEl.innerText = timeLeft;
+
+}
+
+function loseLife(){
+
+lives--;
+
+document
+.getElementById("lives")
+.innerText = lives;
+
+if(lives <= 0){
+
+document
+.getElementById("finalScore")
+.innerText = score;
+
+document
+.getElementById("gameOver")
+.style.display = "flex";
+
+}
+
+}
+
+function unlockAchievement(text){
+
+const el =
+document.getElementById(
+"achievement"
+);
+
+el.innerText =
+"🏆 "
++
+text;
+
+el.style.display = "block";
+
+setTimeout(()=>{
+
+el.style.display = "none";
+
+},2500);
+
 }
 
 </script>
